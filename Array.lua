@@ -7,7 +7,7 @@
 
 class: Array
 {
-	__index = function( this, sKey )
+	__index = function( sKey )
 		if sKey == "Length" then
 			return table.getn( this );
 		elseif type( sKey ) == "number" and this.Length == 0 then
@@ -21,21 +21,21 @@ class: Array
 		return getmetatable( this )[ sKey ];
 	end;
 	
-	Array		= function( this, ... )
-		this:Push( ... );
+	Array		= function( ... )
+		this.Push( ... );
 	end;
 	
-	Push		= function( this, ... )
+	Push		= function( ... )
 		for i, vArg in ipairs( { ... } ) do
 			table.insert( this, vArg );
 		end
 	end;
 	
-	Shift		= function( this )
+	Shift		= function()
 		table.remove( this, 1 );
 	end;
 	
-	Join		= function( this, sDelimiter )
+	Join		= function( sDelimiter )
 		local sResult = "";
 		
 		for i, v in ipairs( this ) do
@@ -55,42 +55,42 @@ class: Array
 		return sResult;
 	end;
 	
-	Concat		= function( this, ... )
+	Concat		= function( ... )
 		local aResult	= new. Array;
 		
-		aResult:Push( unpack( this ) );
-		aResult:Push( ... );
+		aResult.Push( unpack( this ) );
+		aResult.Push( ... );
 		
 		return aResult;
 	end;
 	
-	Pop			= function( this )
+	Pop			= function()
 		local void	= this[ 1 ];
 		
-		this:Shift();
+		this.Shift();
 		
 		return void;
 	end;
 	
-	Unshift		= function( this, ... )
+	Unshift		= function( ... )
 		for i, vArg in ipairs( { ... } ) do
 			table.insert( this, i );
 		end
 	end;
 	
-	Slice		= function( this, iStart, iEnd )
+	Slice		= function( iStart, iEnd )
 		local aNew	= new. Array;
 		
 		for i = ( iStart or 1 ), ( iEnd or this.Length ) do
 			if this[ i ] then
-				aNew:Push( this[ i ] );
+				aNew.Push( this[ i ] );
 			end
 		end
 		
 		return aNew;
 	end;
 	
-	Reverse		= function( this )
+	Reverse		= function()
 		local aResult	= new. Array;
 		
 		for i, vArg in ipairs( this ) do
@@ -100,7 +100,7 @@ class: Array
 		return aResult;
 	end;
 	
-	Sort		= function( this, SortFunc )
+	Sort		= function( SortFunc )
 		if not SortFunc then
 			function SortFunc( a, b )
 				return a < b;
@@ -112,11 +112,11 @@ class: Array
 		return this;
 	end;
 	
-	Splice		= function( this, iStart, iDeleteCount, ... )
+	Splice		= function( iStart, iDeleteCount, ... )
 		local aRemoved = new. Array;
 		
 		for i = iStart, iStart + iDeleteCount do
-			aRemoved:Push( this[ i ] );
+			aRemoved.Push( this[ i ] );
 			
 			table.remove( this, i );
 		end
@@ -130,7 +130,7 @@ class: Array
 		return aRemoved;
 	end;
 	
-	IndexOf		= function( this, vItem, iStart )
+	IndexOf		= function( vItem, iStart )
 		for i = ( iStart or 1 ), this.Length do
 			if this[ i ] == vItem then
 				return i;

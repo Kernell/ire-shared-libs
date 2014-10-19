@@ -58,59 +58,73 @@ function SetDefaultTimezone( sTimezoneID )
 	gl_pCurrentTimezone = get_time_zone_info( sTimezoneID );
 end
 
-class: CDateTime
+class: DateTime
 {
-	ATOM	= "Y-m-d\TH:i:sP";
-	COOKIE	= "l, d-M-y H:i:s T";
-	ISO8601	= "Y-m-d\TH:i:sO";
-	RFC822	= "D, d M y H:i:s O";
-	RFC850	= "l, d-M-y H:i:s T";
-	RFC1036	= "D, d M y H:i:s O";
-	RFC1123	= "D, d M Y H:i:s O";
-	RFC2822	= "D, d M Y H:i:s O";
-	RFC3339	= "Y-m-d\TH:i:sP";
-	RSS		= "D, d M Y H:i:s O";
-	W3C		= "Y-m-d\TH:i:sP";
+	static
+	{
+		ATOM	= "Y-m-d\TH:i:sP";
+		COOKIE	= "l, d-M-y H:i:s T";
+		ISO8601	= "Y-m-d\TH:i:sO";
+		RFC822	= "D, d M y H:i:s O";
+		RFC850	= "l, d-M-y H:i:s T";
+		RFC1036	= "D, d M y H:i:s O";
+		RFC1123	= "D, d M Y H:i:s O";
+		RFC2822	= "D, d M Y H:i:s O";
+		RFC3339	= "Y-m-d\TH:i:sP";
+		RSS		= "D, d M Y H:i:s O";
+		W3C		= "Y-m-d\TH:i:sP";
+	};
 	
-	CDateTime = function( self, iSeconds, sTimezoneID, bLocaltime )
+	DateTime = function( iSeconds, sTimezoneID, bLocaltime )
 		if not gl_pCurrentTimezone then
 			error( "It is not safe to rely on the system's timezone settings. You are *required* to use the SetDefaultTimezone() function.", 2 );
 		end
 		
-		self.m_pTimezoneInfo	= get_time_zone_info( sTimezoneID or gl_pCurrentTimezone.timezone_id );
+		this.TimezoneInfo	= get_time_zone_info( sTimezoneID or gl_pCurrentTimezone.timezone_id );
 		
-		iSeconds		= ( iSeconds or getRealTime().timestamp ) - ( gl_pCurrentTimezone.offset - self.m_pTimezoneInfo.offset );
+		iSeconds		= ( iSeconds or getRealTime().timestamp ) - ( gl_pCurrentTimezone.offset - this.TimezoneInfo.offset );
 		
-		self.m_pTime	= getRealTime( iSeconds );
+		this.m_pTime	= getRealTime( iSeconds );
 		
-		self.m_pTime.d			= self.m_pTime.monthday;
-		self.m_pTime.m			= self.m_pTime.month + 1;
-		self.m_pTime.y			= self.m_pTime.year + 1900;
+		this.Day		= this.m_pTime.monthday;
+		this.Month		= this.m_pTime.month + 1;
+		this.Year		= this.m_pTime.year + 1900;
 		
-		self.m_pTime.h			= self.m_pTime.hour;
-		self.m_pTime.i			= self.m_pTime.minute;
-		self.m_pTime.s			= self.m_pTime.second;
+		this.Hour		= this.m_pTime.hour;
+		this.Minute		= this.m_pTime.minute;
+		this.Second		= this.m_pTime.second;
 		
-		self.m_pTime.sse		= self.m_pTime.timestamp;
+		this.SSE		= this.m_pTime.timestamp;
+		this.Timestamp	= this.SSE;
 		
-		self.m_pTime.zone_type	= TIMELIB_ZONETYPE_ID;
+		this.m_pTime.d			= this.m_pTime.monthday;
+		this.m_pTime.m			= this.m_pTime.month + 1;
+		this.m_pTime.y			= this.m_pTime.year + 1900;
 		
-		self.m_bLocaltime		= bLocaltime == NULL and true or (bool)(bLocaltime);
+		this.m_pTime.h			= this.m_pTime.hour;
+		this.m_pTime.i			= this.m_pTime.minute;
+		this.m_pTime.s			= this.m_pTime.second;
 		
-		self.m_pTime.z			= self.m_pTimezoneInfo.offset;
+		this.m_pTime.sse		= this.m_pTime.timestamp;
+		
+		this.m_pTime.zone_type	= TIMELIB_ZONETYPE_ID;
+		
+		this.Localtime			= bLocaltime == NULL and true or (bool)(bLocaltime);
+		
+		this.m_pTime.z			= this.TimezoneInfo.offset;
 	end;
 	
-	Format = function( self, format )
-		local t 		= self.m_pTime;
+	Format = function( this, format )
+		local t 		= this.m_pTime;
 		local offset	= {};
 		local buffer 	= "";
 		
-		if self.m_bLocaltime then
+		if this.Localtime then
 			if t.zone_type == TIMELIB_ZONETYPE_ABBR then
 				offset.is_dst 		= t.isdst and 1 or 0;
 				offset.offset 		= ( t.z - ( offset.is_dst * 60 ) ) * -60;
 				offset.leap_secs 	= 0;
-				offset.abbr 		= self.m_pTimezoneInfo.abbr:upper();
+				offset.abbr 		= this.TimezoneInfo.abbr:upper();
 				
 			elseif t.zone_type == TIMELIB_ZONETYPE_OFFSET then
 				offset.is_dst 		= 0;
@@ -118,17 +132,17 @@ class: CDateTime
 				offset.leap_secs 	= 0;
 				
 				offset.abbr			= ( "GMT%c%02d%02d" ):format( 
-					self.m_bLocaltime and ( ( offset.offset < 0 ) and '-' or '+') or '+',
-					self.m_bLocaltime and math.abs( offset.offset / 3600 ) or 0,
-					self.m_bLocaltime and math.abs( ( offset.offset % 3600 ) / 60 ) or 0
+					this.Localtime and ( ( offset.offset < 0 ) and '-' or '+') or '+',
+					this.Localtime and math.abs( offset.offset / 3600 ) or 0,
+					this.Localtime and math.abs( ( offset.offset % 3600 ) / 60 ) or 0
 				);
 			else
 				offset		=
 				{
-					is_dst		= self.m_pTimezoneInfo.is_dst;
-					offset		= self.m_pTimezoneInfo.offset;
-					leap_secs	= self.m_pTimezoneInfo.leap_secs;
-					abbr		= self.m_pTimezoneInfo.abbr;
+					is_dst		= this.TimezoneInfo.is_dst;
+					offset		= this.TimezoneInfo.offset;
+					leap_secs	= this.TimezoneInfo.leap_secs;
+					abbr		= this.TimezoneInfo.abbr;
 				};
 			end
 		end
@@ -189,26 +203,26 @@ class: CDateTime
 --			elseif iChar == 'u' then buffer = buffer + ( "%06d" ):format( math.floor( t.f * 1000000 ) );
 			
 			-- timezone
-			elseif iChar == 'I' then buffer = buffer + ( "%d" ):format( self.m_bLocaltime and offset.is_dst or 0 );
+			elseif iChar == 'I' then buffer = buffer + ( "%d" ):format( this.Localtime and offset.is_dst or 0 );
 			elseif iChar == 'P' then
 				rfc_colon = 1;
 				
 				buffer = buffer + ( "%s%02d%s%02d" ):format(
-					self.m_bLocaltime 		and ( ( offset.offset < 0 ) and '-' or '+' ) or '+',
-					self.m_bLocaltime 		and math.abs( offset.offset / 3600 ) or 0,
+					this.Localtime 		and ( ( offset.offset < 0 ) and '-' or '+' ) or '+',
+					this.Localtime 		and math.abs( offset.offset / 3600 ) or 0,
 					rfc_colon ~= 0			and ":" or "",
-					self.m_bLocaltime 		and math.abs( ( offset.offset % 3600 ) / 60 ) or 0
+					this.Localtime 		and math.abs( ( offset.offset % 3600 ) / 60 ) or 0
 				);
 			elseif iChar == 'O' then
 				buffer = buffer + ( "%s%02d%s%02d" ):format(
-					self.m_bLocaltime 		and ( ( offset.offset < 0 ) and '-' or '+' ) or '+',
-					self.m_bLocaltime 		and math.abs( offset.offset / 3600 ) or 0,
+					this.Localtime 		and ( ( offset.offset < 0 ) and '-' or '+' ) or '+',
+					this.Localtime 		and math.abs( offset.offset / 3600 ) or 0,
 					rfc_colon ~= 0			and ":" or "",
-					self.m_bLocaltime 		and math.abs( ( offset.offset % 3600 ) / 60 ) or 0
+					this.Localtime 		and math.abs( ( offset.offset % 3600 ) / 60 ) or 0
 				);
-			elseif iChar == 'T' then buffer = buffer + ( "%s" ):format( self.m_bLocaltime and offset.abbr or "GMT" );
+			elseif iChar == 'T' then buffer = buffer + ( "%s" ):format( this.Localtime and offset.abbr or "GMT" );
 			elseif iChar == 'e' then
-					if not self.m_bLocaltime then
+					if not this.Localtime then
 						buffer = buffer + "UTC";
 					else
 						if t.zone_type == TIMELIB_ZONETYPE_ID then
@@ -225,25 +239,25 @@ class: CDateTime
 							);
 						end
 					end
-			elseif iChar == 'Z' then buffer = buffer + ( "%d" ):format( self.m_bLocaltime and offset.offset or 0 );
+			elseif iChar == 'Z' then buffer = buffer + ( "%d" ):format( this.Localtime and offset.offset or 0 );
 			
 			-- full date/time
 			elseif iChar == 'c' then
 				buffer = buffer + ( "%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d" ):format(
 					t.y, t.m, t.d,
 					t.h, t.i, t.s,
-					self.m_bLocaltime and ( offset.offset < 0 and '-' or '+' ) or '+',
-					self.m_bLocaltime and math.abs( offset.offset / 3600 ) or 0,
-					self.m_bLocaltime and math.abs( ( offset.offset % 3600 ) / 60) or 0
+					this.Localtime and ( offset.offset < 0 and '-' or '+' ) or '+',
+					this.Localtime and math.abs( offset.offset / 3600 ) or 0,
+					this.Localtime and math.abs( ( offset.offset % 3600 ) / 60) or 0
 				);			
 			elseif iChar == 'r' then
 				buffer = buffer + ( "%3s, %02d %3s %04d %02d:%02d:%02d %c%02d%02d" ):format(
 					day_short_names[ t.d ],
 					t.d, mon_short_names[ t.m ],
 					t.y, t.h, t.i, t.s,
-					self.m_bLocaltime and ( offset.offset < 0 and '-' or '+' ) or '+',
-					self.m_bLocaltime and math.abs( offset.offset / 3600 ) or 0,
-					self.m_bLocaltime and math.abs( ( offset.offset % 3600 ) / 60) or 0
+					this.Localtime and ( offset.offset < 0 and '-' or '+' ) or '+',
+					this.Localtime and math.abs( offset.offset / 3600 ) or 0,
+					this.Localtime and math.abs( ( offset.offset % 3600 ) / 60) or 0
 				);			
 			elseif iChar == 'U' then buffer = buffer + ( "%d" ):format( t.sse );
 			elseif iChar == '\\' then

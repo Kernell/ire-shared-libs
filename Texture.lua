@@ -7,35 +7,39 @@
 
 ASSERT( CLIENT, "This script is client-side only" );
 
-class: CTexture
+class: Texture
 {
-	_CTexture			= destroyElement;
+	_Texture			= function()
+		return destroyElement( this );
+	end;
 	
-	Destroy				= destroyElement;
+	Destroy				= function()
+		delete ( this );
+	end;
 	
 	GetSize				= dxGetMaterialSize;
 	
-	SetPixels			= function( this, sPixels, iSurfaceIndex, ... )
+	SetPixels			= function( sPixels, iSurfaceIndex, ... )
 		return dxSetTexturePixels( iSurfaceIndex or 0, this, sPixels, ... );
 	end;
 	
-	GetPixels			= function( this, iSurfaceIndex, ... )
+	GetPixels			= function( iSurfaceIndex, ... )
 		return dxSetTexturePixels( iSurfaceIndex or 0, this, ... );
 	end;
 	
-	Draw				= function( this, fX, fY, fWidth, fHeight, fRotation, fRotationCenterOffsetX,  fRotationCenterOffsetY, iColor, bPostGUI )
+	Draw				= function( fX, fY, fWidth, fHeight, fRotation, fRotationCenterOffsetX,  fRotationCenterOffsetY, iColor, bPostGUI )
 		return dxDrawImage( fX, fY, fWidth, fHeight, this, fRotation or 0, fRotationCenterOffsetX or 0, fRotationCenterOffsetX or 0, iColor or -1, bPostGUI == true );
 	end;
 	
-	DrawSection			= function( this, fX, fY, fWidth, fHeight, fU, fV, fUSize, fVSize, fRotation, fRotationCenterOffsetX,  fRotationCenterOffsetY, iColor, bPostGUI )
+	DrawSection			= function( fX, fY, fWidth, fHeight, fU, fV, fUSize, fVSize, fRotation, fRotationCenterOffsetX,  fRotationCenterOffsetY, iColor, bPostGUI )
 		return dxDrawImageSection( fX, fY, fWidth, fHeight, fU, fV, fUSize, fVSize, this, fRotation or 0, fRotationCenterOffsetX or 0, fRotationCenterOffsetX or 0, iColor or -1, bPostGUI == true );
 	end;
 	
-	DrawLine3D			= function( this, fX, fY, fZ, fEndX, fEndY, fEndZ, fWidth, iColor, fFaceTowardX, fFaceTowardY, fFaceTowardZ )
+	DrawLine3D			= function( fX, fY, fZ, fEndX, fEndY, fEndZ, fWidth, iColor, fFaceTowardX, fFaceTowardY, fFaceTowardZ )
 		return dxDrawMaterialLine3D( fX, fY, fZ, fEndX, fEndY, fEndZ, this, fWidth, iColor, fFaceTowardX, fFaceTowardY, fFaceTowardZ );
 	end;
 	
-	DrawSectionLine3D	= function( this, fX, fY, fZ, fEndX, fEndY, fEndZ, fU, fV, fUSize, fVSize, fWidth, iColor, fFaceTowardX, fFaceTowardY, fFaceTowardZ )
+	DrawSectionLine3D	= function( fX, fY, fZ, fEndX, fEndY, fEndZ, fU, fV, fUSize, fVSize, fWidth, iColor, fFaceTowardX, fFaceTowardY, fFaceTowardZ )
 		return dxDrawMaterialSectionLine3D( fX, fY, fZ, fEndX, fEndY, fEndZ, fU, fV, fUSize, fVSize, this, fWidth, iColor, fFaceTowardX, fFaceTowardY, fFaceTowardZ );
 	end;
 };

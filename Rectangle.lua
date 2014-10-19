@@ -12,68 +12,68 @@ class: Rectangle
 	Width	= NULL; 
 	Height	= NULL;
 	
-	Rectangle	= function( this, ... )
+	Rectangle	= function( ... )
 		if table.getn( { ... } ) == 2 then
-			return this:FromPS( ... );
+			return this.FromPS( ... );
 		elseif table.getn( { ... } ) == 4 then
-			return this:FromXYWH( ... );
+			return this.FromXYWH( ... );
 		end
 	end;
 	
-	FromXYWH	= function( this, X, Y, Width, Height )
+	FromXYWH	= function( X, Y, Width, Height )
 		this.X		= X;
 		this.Y		= Y;
 		this.Width	= Width; 
 		this.Height	= Height;
 	end;
 
-	FromPS		= function( this, Point, Size )
+	FromPS		= function( Point, Size )
 		this.x		= Point.X;
 		this.y		= Point.Y;
 		this.width	= Size.Width; 
 		this.height	= Size.Height;
 	end;
 
-	FromLTRB	= function( this, left, top, right, bottom )
+	FromLTRB	= function( left, top, right, bottom )
 		return Rectangle( left, top, right - left, bottom - top );
 	end;
 	
 	property: Left
 	{
-		get	= function( this )
+		get	= function()
 			return this.X;
 		end;
 	};
 	
 	property: Top
 	{
-		get	= function( this )
+		get	= function()
 			return this.Y;
 		end;
 	};
 	
 	property: Right
 	{
-		get	= function( this )
+		get	= function()
 			return this.X + this.Width;
 		end;
 	};
 	
 	property: Bottom
 	{
-		get	= function( this )
+		get	= function()
 			return this.Y + this.Height;
 		end;
 	};
 	
 	property: IsEmpty
 	{
-		get	= function( this )
+		get	= function()
 			return this.Height == 0 and this.Width == 0 and this.X == 0 and this.Y == 0; 
 		end;
 	};
 	
-	Equals	= function( this, obj )
+	Equals	= function( obj )
 		if classof( obj ) ~= Rectangle then
 			return false; 
 		end
@@ -105,60 +105,60 @@ class: Rectangle
 		end;
 	};
 	
-	Contains	= function( this, arg1, arg2 )
+	Contains	= function( arg1, arg2 )
 		if type( arg1 ) == "number" and type( arg2 ) == "number" then
-			return this:Contains_XY( arg1, arg2 );
+			return this.Contains_XY( arg1, arg2 );
 		elseif classof( arg1 ) == Point then
-			return this:Contains_Point( arg1 );
+			return this.Contains_Point( arg1 );
 		elseif classof( arg1 ) == Rectangle then
-			return this:Contains_Rectangle( arg1 );
+			return this.Contains_Rectangle( arg1 );
 		end
 		
 		return false;
 	end;
 	
-	Contains_XY	= function( this, X, Y )
+	Contains_XY	= function( X, Y )
 		return this.X <= X and X < this.X + this.Width and this.Y <= Y and Y < this.Y + this.Height; 
 	end;
 	
-	Contains_Point	= function( this, pt )
-		return this:ContainsXY( pt.X, pt.Y ); 
+	Contains_Point	= function( pt )
+		return this.ContainsXY( pt.X, pt.Y ); 
 	end;
 	
-	Contains_Rectangle	= function( this, rect )
+	Contains_Rectangle	= function( rect )
 		return ( this.X <= rect.X ) and ( ( rect.X + rect.Width ) <= ( this.X + this.Width ) ) and ( this.Y <= rect.Y ) and ( ( rect.Y + rect.Height ) <= ( this.Y + this.Height ) ); 
 	end;
 	
-	Inflate			= function( this, arg1, arg2, arg3 )
+	Inflate			= function( arg1, arg2, arg3 )
 		if type( arg1 ) == "number" and type( arg2 ) == "number" then
-			this:Inflate_WH( arg1, arg2 );
+			this.Inflate_WH( arg1, arg2 );
 		elseif classof( arg1 ) == Size then
-			this:Inflate_Size( arg1 );
+			this.Inflate_Size( arg1 );
 		elseif classof( arg1 ) == Rectangle then
-			this:Inflate_Rectangle( arg1, arg2, arg3 );
+			this.Inflate_Rectangle( arg1, arg2, arg3 );
 		end
 	end;
 	
-	Inflate_WH		= function( this, width, height )
+	Inflate_WH		= function( width, height )
 		this.X 		= this.X - width;
 		this.Y 		= this.Y - height;
 		this.Width 	= this.Width + 2 * width; 
 		this.Height = this.Height + 2 * height;
 	end;
 	
-	Inflate_Size	= function( this, size )
-		this:Inflate_WH( size.Width, size.Height );
+	Inflate_Size	= function( size )
+		this.Inflate_WH( size.Width, size.Height );
 	end;
 	
-	Inflate_Rectangle	= function( this, rect, x, y )
+	Inflate_Rectangle	= function( rect, x, y )
 		local r = rect;
 		
-		r:Inflate( x, y ); 
+		r.Inflate( x, y ); 
 		
 		return r;
 	end;
 	
-	Intersect		= function( this, rect )
+	Intersect		= function( rect )
 		local result = Rectangle.Intersect2( rect, this );
 
 		this.X		= result.X;
@@ -167,43 +167,44 @@ class: Rectangle
 		this.Height	= result.Height; 
 	end;
 	
-	Intersect2		= function( a, b )
-		local x1	= math.max( a.X, b.X );
-		local x2	= math.min( a.X + a.Width, b.X + b.Width );
-		local y1	= math.max( a.Y, b.Y );
-		local y2	= math.min( a.Y + a.Height, b.Y + b.Height );
-
-		if x2 >= x1 and y2 >= y1 then
-			return Rectangle( x1, y1, x2 - x1, y2 - y1 );
-		end
-		
-		return Rectangle.Empty;
-	end;
+	static
+	{
+		Intersect2		= function( a, b )
+			local x1	= math.max( a.X, b.X );
+			local x2	= math.min( a.X + a.Width, b.X + b.Width );
+			local y1	= math.max( a.Y, b.Y );
+			local y2	= math.min( a.Y + a.Height, b.Y + b.Height );
+			
+			if x2 >= x1 and y2 >= y1 then
+				return Rectangle( x1, y1, x2 - x1, y2 - y1 );
+			end
+			
+			return Rectangle.Empty;
+		end;
+	};
 	
-	IntersectsWith	= function( this, rect )
+	IntersectsWith	= function( rect )
 		return ( rect.X < this.X + this.Width ) and ( this.X < ( rect.X + rect.Width ) ) and ( rect.Y < this.Y + this.Height ) and ( this.Y < rect.Y + rect.Height ); 
 	end;
 	
-	Offset			= function( this, arg1, arg2 )
+	Offset			= function( arg1, arg2 )
 		if type( arg1 ) == "number" and type( arg2 ) == "number" then
-			this:Offset_XY( arg1, arg2 );
+			this.Offset_XY( arg1, arg2 );
 		elseif classof( arg1 ) == Point then
-			this:Offset_Point( arg1 );
+			this.Offset_Point( arg1 );
 		end
 	end;
 	
-	Offset_Point	= function( this, pos )
-		this:Offset( pos.X, pos.Y );
+	Offset_Point	= function( pos )
+		this.Offset( pos.X, pos.Y );
 	end;
 	
-	Offset_XY		= function( this, x, y )
+	Offset_XY		= function( x, y )
 		this.X = this.X + x; 
 		this.Y = this.Y + y;
 	end;
 	
-	ToString	= function( this )
+	ToString	= function()
 		return "{X=" + this.X + ",Y=" + this.Y + ",Width=" + this.Width + ",Height=" + this.Height + "}"; 
 	end;
 };
-
-Rectangle.__eq		= Rectangle.Equals;

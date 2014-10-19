@@ -7,16 +7,16 @@
 
 Easing =
 {
-	Linear	= function( this, f )
+	Linear	= function( f )
 		return f;
 	end;
 	
-	Swing 	= function( this, f, a, h, g )
-		-- return Easing:OutQuad( f, a, h, g );
-		return Easing:InOutQuad( f, a, h, g );
+	Swing 	= function( f, a, h, g )
+		-- return Easing.OutQuad( f, a, h, g );
+		return Easing.InOutQuad( f, a, h, g );
 	end;
 
-	InQuad	= function( this, f, a, h, g )
+	InQuad	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -26,7 +26,7 @@ Easing =
 		return h * f * f + a;
 	end;
 	
-	OutQuad		= function( this, f, a, h, g )
+	OutQuad		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -36,7 +36,7 @@ Easing =
 		return -h * f * ( f - 2 ) + a;
 	end;
 	
-	InOutQuad	= function( this, f, a, h, g )
+	InOutQuad	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 0.25;
@@ -52,7 +52,7 @@ Easing =
 		return -h / 2 * ( f * ( f - 2 ) - 1 ) + a;
 	end;
 
-	InCubic		= function( this, f, a, h, g )
+	InCubic		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -62,7 +62,7 @@ Easing =
 		return h * f * f * f + a;
 	end;
 	
-	OutCubic	= function( this, f, a, h, g )
+	OutCubic	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -72,7 +72,7 @@ Easing =
 		return h * ( f * f * f + 1 ) + a;
 	end;
 	
-	InOutCubic	= function( this, f, a, h, g )
+	InOutCubic	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 0.25;
@@ -88,7 +88,7 @@ Easing =
 		return h / 2 * ( f * f * f + 2 ) + a;
 	end;
 	
-	InQuart		= function( this, f, a, h, g )
+	InQuart		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -98,7 +98,7 @@ Easing =
 		return h * f * f * f * f + a;
 	end;
 	
-	OutQuart	= function( this, f, a, h, g )
+	OutQuart	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -108,7 +108,7 @@ Easing =
 		return -h * ( f * f * f * f - 1 ) + a;
 	end;
 	
-	InOutQuart	= function( this, f, a, h, g )
+	InOutQuart	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 0.25;
@@ -124,7 +124,7 @@ Easing =
 		return -h / 2 * ( f * f * f * f - 2 ) + a;
 	end;
 	
-	InQuint		= function( this, f, a, h, g )
+	InQuint		= function(  f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -134,7 +134,7 @@ Easing =
 		return h * f * f * f * f * f + a;
 	end;
 	
-	OutQuint	= function( this, f, a, h, g )
+	OutQuint	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -144,7 +144,7 @@ Easing =
 		return h * ( f * f * f * f * f + 1 ) + a;
 	end;
 	
-	InSine		= function( this, f, a, h, g)
+	InSine		= function(  f, a, h, g)
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -152,7 +152,7 @@ Easing =
 		return -h * math.cos( f / g * ( math.pi / 2 ) ) + h + a;
 	end;
 	
-	OutSine		= function( this, f, a, h, g )
+	OutSine		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -160,7 +160,7 @@ Easing =
 		return h * math.sin( f / g * ( math.pi / 2 ) ) + a;
 	end;
 	
-	InOutSine	= function( this, f, a, h, g )
+	InOutSine	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -168,7 +168,7 @@ Easing =
 		return -h / 2 * ( math.cos( math.pi * f / g ) - 1 ) + a;
 	end;
 	
-	InExpo 		= function( this, f, a, h, g )
+	InExpo 		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -176,7 +176,7 @@ Easing =
 		return ( f == 0 ) and a or h * math.pow( 2, 10 * ( f / g - 1 ) ) + a;
 	end;
 	
-	OutExpo		= function( this, f, a, h, g )
+	OutExpo		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -184,7 +184,7 @@ Easing =
 		return ( f == g ) and a + h or h * ( -math.pow( 2, -10 * f / g ) + 1 ) + a;
 	end;
 	
-	InOutExpo	= function( this, f, a, h, g )
+	InOutExpo	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 0.25;
@@ -206,7 +206,7 @@ Easing =
 		return h / 2 * ( -math.pow( 2, -10 * ( f - 1 ) ) + 2 ) + a;
 	end;
 	
-	InCirc		= function( this, f, a, h, g )
+	InCirc		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -216,7 +216,7 @@ Easing =
 		return -h * ( math.sqrt( 1 - f * f ) - 1 ) + a;
 	end;
 	
-	OutCirc		= function( this, f, a, h, g )
+	OutCirc		= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -226,7 +226,7 @@ Easing =
 		return h * math.sqrt( 1 - f * f ) + a;
 	end;
 	
-	InOutCirc	= function( this, f, a, h, g )
+	InOutCirc	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 0.25;
@@ -242,7 +242,7 @@ Easing =
 		return h / 2 * ( math.sqrt( 1 - f * f ) + 1 ) + a;
 	end;
 	
-	InElastic	= function( this, h, e, l, k )
+	InElastic	= function( h, e, l, k )
 		e = e or 0.0;
 		l = l or 1.0;
 		k = k or 0.5;
@@ -278,7 +278,7 @@ Easing =
 		return -( g * math.pow( 2, 10 * h ) * math.sin( ( h * k - i ) * ( 2 * math.pi ) / j ) ) + e;
 	end;
 
-	OutElastic	= function( this, h, e, l, k )
+	OutElastic	= function( h, e, l, k )
 		e = e or 0.0;
 		l = l or 1.0;
 		k = k or 1.0;
@@ -311,7 +311,7 @@ Easing =
 		return g * math.pow( 2, -10 * h ) * math.sin( ( h * k - i ) * ( 2 * math.pi ) / j ) + l + e;
 	end;
 	
-	InOutElastic	= function( this, h, e, l, k )
+	InOutElastic	= function( h, e, l, k )
 		e = e or 0.0;
 		l = l or 1.0;
 		k = k or 0.25;
@@ -352,7 +352,7 @@ Easing =
 		return g * math.pow( 2, -10 * h ) * math.sin( ( h * k - fOvershoot ) * ( 2 * math.pi ) / j ) * 0.5 + l + e;
 	end;
 	
-	InBack		= function( this, f, a, i, h, fOvershoot )
+	InBack		= function( f, a, i, h, fOvershoot )
 		a = a or 0.0;
 		i = i or 1.0;
 		h = h or 1.0;
@@ -366,7 +366,7 @@ Easing =
 		return i * f * f * ( ( fOvershoot + 1 ) * f - fOvershoot ) + a;
 	end;
 	
-	OutBack		= function( this, f, a, i, h, fOvershoot )
+	OutBack		= function( f, a, i, h, fOvershoot )
 		a = a or 0.0;
 		i = i or 1.0;
 		h = h or 1.0;
@@ -380,7 +380,7 @@ Easing =
 		return i * ( f * f * ( ( fOvershoot + 1 ) * f + fOvershoot ) + 1 ) + a;
 	end;
 	
-	InOutBack	= function( this, f, a, i, h, fOvershoot )
+	InOutBack	= function( f, a, i, h, fOvershoot )
 		a = a or 0.0;
 		i = i or 1.0;
 		h = h or 0.25;
@@ -402,15 +402,15 @@ Easing =
 		return i / 2 *  ( f * f * ( ( fOvershoot + 1 ) * f + fOvershoot ) + 2 ) + a;
 	end;
 	
-	InBounce	= function( this, f, a, h, g )
+	InBounce	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
 		
-		return h - Easing:OutBounce( g - f, 0, h, g ) + a;
+		return h - Easing.OutBounce( g - f, 0, h, g ) + a;
 	end;
 	
-	OutBounce	= function( this, f, a, h, g )
+	OutBounce	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
@@ -438,15 +438,15 @@ Easing =
 		end
 	end;
 	
-	InOutBounce	= function( this, f, a, h, g )
+	InOutBounce	= function( f, a, h, g )
 		a = a or 0.0;
 		h = h or 1.0;
 		g = g or 1.0;
 		
 		if f < g / 2 then
-			return Easing:InBounce( f * 2, 0, h, g ) * 0.5 + a;
+			return Easing.InBounce( f * 2, 0, h, g ) * 0.5 + a;
 		end
 		
-		return Easing:OutBounce( f * 2 - g, 0, h, g ) * 0.5 + h * 0.5 + a;
+		return Easing.OutBounce( f * 2 - g, 0, h, g ) * 0.5 + h * 0.5 + a;
 	end;
 };

@@ -7,72 +7,15 @@
 
 local Protected	=
 {
-	__type		= true;
-	__name		= true;
-	__bases		= true;
-	__class 	= true;
-	__index 	= true;
-	__fenv		= true;
-	__static	= true;
+	__type			= true;
+	__name			= true;
+	__class 		= true;
+	__index 		= true;
+	__property		= true;
+	__properties	= true;
+	__new			= true;
+	__fenv			= true;
 };
-
-local ClassMeta	=
-{
-	__NewObject	= function( this )
-		local pObject		=
-		{
-			__type	= "object";
-		};
-		
-		setmetatable( pObject, this );
-		
-		for i, CClass in ipairs( this.__bases ) do
-			rawset( pObject, CClass.__name, CClass[ CClass.__name ] );
-		end
-		
-		return pObject;
-	end;
-	
-	__call		= function( this, ... )
-		local pObject = this:__NewObject();
-		
-		-- local vResult = this[ this.__name ]( pObject, ... );
-		
-		local vResult = pObject( ... );
-		
-		return vResult == NULL and pObject or vResult;
-	end;
-	
-	__tostring	= function( this )
-		return typeof( this ) + ": " + classname( this );
-	end;
-};
-
-ClassMeta.__index = function( self, vKey )
-	local pProperty = rawget( self, "__property" );
-
-	if pProperty and pProperty[ vKey ] and pProperty[ vKey ].get then
-		if type( pProperty[ vKey ].get ) == "function" then
-			return pProperty[ vKey ].get( self );
-		end
-		
-		return pProperty[ vKey ].get;
-	end
-	
-	return ClassMeta[ vKey ];
-end
-
-ClassMeta.__newindex = function( self, vKey, vValue )
-	local pProperty = rawget( self, "__property" );
-	
-	if pProperty and pProperty[ vKey ] and type( pProperty[ vKey ].set ) == "function" then
-		pProperty[ vKey ].set( self, vValue );
-		
-		return;
-	end
-	
-	rawset( self, vKey, vValue );
-end
 
 class			= 
 {
@@ -80,184 +23,385 @@ class			=
 		return NULL;
 	end;
 	
-	__index		= function( this, sName )
-		local Space			= _G;
+	__index		= function( this, Name )
+		local Class	= this:Create( Name );
 		
-		if split then
-			local Names	= sName:split( "." );
-			sClassName	= Names[ table.getn( Names ) ];
-			
-			table.remove( Names );
-			
-			for i, sNamespace in ipairs( Names ) do
-				if type( Space[ sNamespace ] ) == "table" then
-					Space = Space[ sNamespace ];
-				else
-					error( "attempt to index '" + sNamespace + "' in " + sName, 2 );
-				end
-			end
-		end
-		
-		local TClass	= this:Create( sClassName or sName );
-		
-		Space[ sClassName or sName ] = TClass;
+		_G[ Name ] = Class;
 		
 		return function( this, ... )
 			local Args1	= { ... };
 			
 			if typeof( Args1[ 1 ] ) == "class" then
-				this:SetBases( TClass, Args1 );
+				this:Extends( Class, Args1 );
 				
 				return function( ... )
-					this:SetValues( TClass, ... );
+					this:SetValues( Class, ... );
 				end;
 			end
 			
-			this:SetValues( TClass, ... );
+			this:SetValues( Class, ... );
 		end;
 	end;
 	
-	__call		= function( this, sName )
-		local Space			= _G;
-		
-		if split then
-			local Names	= sName:split( "." );
-			sClassName	= Names[ table.getn( Names ) ];
-			
-			table.remove( Names );
-			
-			for i, sNamespace in ipairs( Names ) do
-				if type( Space[ sNamespace ] ) == "table" then
-					Space = Space[ sNamespace ];
-				else
-					error( "attempt to index '" + sNamespace + "' in " + sName, 2 );
-				end
-			end
-		end
-		
-		local TClass	= this:Create( sClassName or sName );
-		
-		Space[ sClassName or sName ] = TClass;
-		
-		return function( ... )
-			local Args1	= { ... };
-			
-			if typeof( Args1[ 1 ] ) == "class" then
-				this:SetBases( TClass, Args1 );
-				
-				return function( ... )
-					this:SetValues( TClass, ... );
-				end;
-			end
-			
-			this:SetValues( TClass, ... );
-		end;
+	__call		= function( this )
+		return NULL;
 	end;
 	
-	Create		= function( this, sName )
+	Create		= function( this, Name )
 		local CClass	=
 		{
-			__type		= "class";
-			__name		= sName;
-			__bases		= {};
+			[ Name ]	= function() end;
 			
-			[ sName ]	= function() end;
-		};
-		
-		CClass.__class 	= CClass;
+			__call		= function( self, ... )
+				local Name = getmetatable( self ).__name;
+				
+				local vResult = self[ Name ]( ... )
+				
+				return vResult == NULL and self or vResult;
+			end;
 			
-		function CClass:__call( ... )
-			local vResult = CClass[ sName ]( self, ... )
-			
-			return vResult == NULL and self or vResult;
-		end;
-		
-		function CClass:__index( vKey )
-			local pProperty = rawget( CClass, "__property" );
-			
-			if pProperty and pProperty[ vKey ] and pProperty[ vKey ].get then
-				if type( pProperty[ vKey ].get ) == "function" then
-					return pProperty[ vKey ].get( self );
+			__add		= function( self, op )
+				if self.Add then
+					return self.Add( op );
 				end
 				
-				return pProperty[ vKey ].get;
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '+' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__sub		= function( self, op )
+				if self.Sub then
+					return self.Sub( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '-' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__mul		= function( self, op )
+				if self.Mul then
+					return self.Mul( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '*' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__div		= function( self, op )
+				if self.Div then
+					return self.Div( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '/' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__pow		= function( self, op )
+				if self.Pow then
+					return self.Pow( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '^' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__mod		= function( self, op )
+				if self.Mod then
+					return self.Mod( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '%' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__eq		= function( self, op )
+				if self.Equality then
+					return self.Equality( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '==' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__concat	= function( self, op )
+				if self.Concat then
+					return self.Concat( op );
+				end
+				
+				local Types =
+				{
+					{ typeof( self ), self },
+					{ typeof( op ), op }
+				};
+				
+				for i, Type in ipairs( Types ) do
+					if Type[ 1 ] == "object" then
+						Types[ i ][ 1 ] = classname( Type[ 2 ] );
+					end
+				end
+				
+				error( "Operator '+' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+			end;
+			
+			__len		= function( self )
+				if self.Length then
+					return self.Length();
+				end
+				
+				error( "Operator '#' cannot be applied to operands of type '" + classname( self ) + "'", 2 );
+			end;
+		};
+		
+		CClass.__class 			= CClass;
+		CClass.__tostring__ 	= CClass.__tostring;
+		
+		function CClass:__tostring()
+			if self.ToString then
+				return self.ToString();
 			end
 			
-			return rawget( CClass, vKey );
+			CClass.__tostring = NULL;
+			
+			local Result = tostring( self );
+			
+			rawset( CClass, "__tostring", CClass.__tostring__ );
+			
+			return Result;
+		end;
+		
+		function CClass:__index( KeyName )
+			local Result = rawget( self, KeyName );
+			
+			if type( Result ) == "nil" then
+				Result = CClass[ KeyName ];
+			end
+			
+			if type( Result ) == "function" then
+				setfenv( Result, self.__fenv );
+				
+				return Result;
+			end
+			
+			if type( Result ) ~= "nil" then
+				return Result;
+			end
+			
+			local pProperty = CClass.__property;
+			
+			if pProperty and pProperty[ KeyName ] and pProperty[ KeyName ].get then
+				if type( pProperty[ KeyName ].get ) == "function" then
+					setfenv( pProperty[ KeyName ].get, self.__fenv );
+					
+					return pProperty[ KeyName ].get( self );
+				end
+				
+				return pProperty[ KeyName ].get;
+			end
+			
+			return NULL;
 		end
 		
-		function CClass:__newindex( vKey, vValue )
-			local pProperty = rawget( CClass, "__property" );
+		function CClass:__newindex( KeyName, vValue )
+			local pProperty = CClass.__property;
 			
-			if pProperty and pProperty[ vKey ] and type( pProperty[ vKey ].set ) == "function" then
-				pProperty[ vKey ].set( self, vValue );
+			if pProperty and pProperty[ KeyName ] and type( pProperty[ KeyName ].set ) == "function" then
+				setfenv( pProperty[ KeyName ].set, self.__fenv );
+				
+				pProperty[ KeyName ].set( vValue );
 				
 				return;
 			end
 			
-			rawset( self, vKey, vValue );
+			rawset( self, KeyName, vValue );
 		end
 		
 		function CClass:__gc()
 			
 		end
 		
+		local ClassMeta	=
+		{
+			__type			= "class";
+			__name			= Name;
+			__property		= {};
+			__properties	= {};
+			
+			__new		= function( Class )
+				local Object		=
+				{
+					__type	= "object";
+					__fenv	= {};
+				};
+				
+				local fenv_meta =
+				{
+					__index		= function( s, k )
+						if k == "this" then
+							return Object.this;
+						end;
+						
+						return _G[ k ];
+					end;
+				};
+				
+				setmetatable( Object.__fenv, fenv_meta );
+				
+				Object.this	= Object;
+				
+				setmetatable( Object, Class );
+				
+				for key, value in pairs( Class.__properties ) do
+					Object[ key ] = value;
+				end
+				
+				return Object;
+			end;
+			
+			__call		= function( Class, Object )
+				error( "assertion failed", 2 );
+			end;
+			
+			__tostring	= function( Class )
+				return typeof( Class ) + ": " + classname( Class );
+			end;
+			
+			__newindex	= function()
+				error( "A namespace does not directly contain members such as fields or methods", 2 );
+			end;
+		};
+
+		ClassMeta.__index = ClassMeta;
+		
 		setmetatable( CClass, ClassMeta );
 		
 		return CClass;
 	end;
 	
-	SetBases	= function( this, CClass, Bases )
-		CClass.__bases = Bases;
-		
-		for i, _CClass in ipairs( CClass.__bases ) do
-			for key, value in pairs( _CClass ) do
+	Extends		= function( this, Class, Bases )
+		for i, _Class in ipairs( Bases ) do
+			for key, value in pairs( _Class ) do
 				if not Protected[ key ] then
-					-- if type( value ) == "function" and ( not CClass.__static or not CClass.__static[ key ] ) then						
-						-- CClass[ key ]	= function( ... )
-							-- return _CClass[ key ]( ... );
-						-- end
-					-- else
-						CClass[ key ]	= value;
-					-- end
+					if type( value ) == "function" then
+						rawset( Class, key, value );
+					else
+						Class.__properties[ key ] = value;
+					end
+				end
+			end
+			
+			for key, value in pairs( _Class.__properties ) do
+				if not Protected[ key ] then
+					Class.__properties[ key ] = value;
 				end
 			end
 		end
 	end;
 	
-	SetValues	= function( this, CClass, Values )
+	SetValues	= function( this, Class, Values )
+		if Values == NULL then
+			error( "assertion failed", 3 );
+		end
+		
 		for key, value in pairs( Values ) do
 			if not Protected[ key ] then
 				if tonumber( key ) and type( value ) == "table" then
 					if value.__static then
-						if not CClass.__static then
-							CClass.__static = {};
-						end
+						local ClassMeta = getmetatable( Class );
 						
 						for k, v in pairs( value ) do
 							if not Protected[ k ] then
-								CClass.__static[ k ] = true;
-								CClass[ k ] = v;
+								ClassMeta[ k ] = v;
 							end
 						end
 					elseif value.__property then
-						if not CClass.__property then
-							CClass.__property = {};
-						end
-						
 						local sKey = value.__property;
 						
-						CClass.__property[ sKey ] = value;
+						Class.__property[ sKey ] = value;
 					end
 				else
-					CClass[ key ] = value;
+					if type( value ) == "function" then
+						rawset( Class, key, value );
+					else
+						Class.__properties[ key ] = value;
+					end
 				end
-			end
-		end
-		
-		if not CClass[ CClass.__name ] then
-			CClass[ CClass.__name ]	= function( self )
-				
 			end
 		end
 	end;
@@ -267,10 +411,10 @@ setmetatable( class, class );
 
 new		=
 {
-	__index		= function( this, sName )
-		local pClass	= _G[ sName ];
+	__index		= function( this, Name )
+		local Class	= _G[ Name ];
 		
-		return pClass and pClass:__NewObject();
+		return Class and Class:__new();
 	end;
 };
 
@@ -300,7 +444,13 @@ function virtual( CClass )
 end
 
 function typeof( void )
-	return void and void.__type or type( void ); 
+	local Type = type( void );
+	
+	if Type == "table" or Type == "userdata" then
+		return void.__type or Type;
+	end
+	
+	return Type; 
 end
 
 function classof( void )
