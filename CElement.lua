@@ -10,11 +10,11 @@ INVALID_ELEMENT_ID			= 0xFFFFFFFF
 class: CElement
 {
 	CElement				= function( this, ... )
-		if not ( { ... } )[ 1 ] then
-			error( "Bad argument @ 'createElement' [Expected string at argument 1, got none]", 2 );
+		if typeof( ( { ... } )[ 1 ] ) ~= "string" then
+			error( "Bad argument @ 'createElement' [Expected string at argument 1, got " + typeof( ( { ... } )[ 1 ] ) + "]", 4 );
 		end
 		
-		local pElement	= createElement( ... );
+		local pElement = createElement( ... );
 		
 		pElement( this );
 		
@@ -129,9 +129,9 @@ class: CElement
 		
 		local vecRotation	= Vector3();
 		
-		vecRotation.Z = ( 360.0 - math.deg( math.atan2( vecPosition.X - self:GetPosition().X, vecPosition.Y - self:GetPosition().Y ) ) ) % 360.0;
+		vecRotation.Z = ( 360.0 - math.deg( math.atan2( vecPosition.X - this:GetPosition().X, vecPosition.Y - this:GetPosition().Y ) ) ) % 360.0;
 		
-		return self:SetRotation( vecRotation );
+		return this:SetRotation( vecRotation );
 	end;
 	
 	SetVelocity				= function( this, pVector )
@@ -250,7 +250,7 @@ UserdataMeta	=
 			ElementCache[ this ] = pObject;
 		end
 		
-		return ElementCache[ this ];
+		return pObject;
 	end;
 	
 	__finalize	= function( this )

@@ -36,9 +36,7 @@ local ClassMeta	=
 	__call		= function( this, ... )
 		local pObject = this:__NewObject();
 		
-		-- local vResult = this[ this.__name ]( pObject, ... );
-		
-		local vResult = pObject( ... );
+		local vResult = this[ this.__name ]( pObject, ... );
 		
 		return vResult == NULL and pObject or vResult;
 	end;
@@ -82,6 +80,7 @@ class			=
 	
 	__index		= function( this, sName )
 		local Space			= _G;
+		local sClassName;
 		
 		if split then
 			local Names	= sName:split( "." );
@@ -119,6 +118,7 @@ class			=
 	
 	__call		= function( this, sName )
 		local Space			= _G;
+		local sClassName;
 		
 		if split then
 			local Names	= sName:split( "." );
@@ -165,12 +165,6 @@ class			=
 		};
 		
 		CClass.__class 	= CClass;
-			
-		function CClass:__call( ... )
-			local vResult = CClass[ sName ]( self, ... )
-			
-			return vResult == NULL and self or vResult;
-		end;
 		
 		function CClass:__index( vKey )
 			local pProperty = rawget( CClass, "__property" );
