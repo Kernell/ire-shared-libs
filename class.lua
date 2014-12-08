@@ -349,12 +349,18 @@ class			=
 			__tostring	= function( Class )
 				return typeof( Class ) + ": " + classname( Class );
 			end;
-			
-			__newindex	= function()
-				error( "A namespace does not directly contain members such as fields or methods", 2 );
-			end;
 		};
-
+		
+		ClassMeta.__newindex	= function( Class, key, value )
+			if ClassMeta[ key ] ~= NULL then
+				ClassMeta[ key ] = value;
+				
+				return;
+			end
+			
+			error( "A namespace does not directly contain members such as fields or methods", 2 );
+		end;
+		
 		ClassMeta.__index = ClassMeta;
 		
 		if BaseClass then
