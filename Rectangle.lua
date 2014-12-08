@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Rectangle
+class. Rectangle
 {
 	X		= NULL; 
 	Y		= NULL;

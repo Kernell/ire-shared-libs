@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Array
+class. Array
 {
 	__index = function( sKey )
 		if sKey == "Length" then

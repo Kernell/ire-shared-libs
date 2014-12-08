@@ -6,7 +6,7 @@
 -- Version		1.0
 
 
-class: Ped ( Element )
+class. Ped : Element
 {
 	enum "ePedAnimation"
 	{

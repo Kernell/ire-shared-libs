@@ -73,7 +73,7 @@ enum "eBlipSprite"
     'BLIP_SPRITE_SPRAY'
 };
 
-class: Blip ( Element )
+class. Blip : Element
 {
 	Blip		= function( pTarget, ... )
 		pTarget = pTarget or new. Vector3();

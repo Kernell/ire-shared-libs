@@ -10,6 +10,7 @@ local Protected	=
 	__type			= true;
 	__name			= true;
 	__class 		= true;
+	__base			= true;
 	__index 		= true;
 	__property		= true;
 	__properties	= true;
@@ -24,30 +25,37 @@ class			=
 	end;
 	
 	__index		= function( this, Name )
-		local Class	= this:Create( Name );
-		
-		_G[ Name ] = Class;
-		
-		return function( this, ... )
-			local Args1	= { ... };
-			
-			if typeof( Args1[ 1 ] ) == "class" then
-				this:Extends( Class, Args1 );
-				
-				return function( ... )
-					this:SetValues( Class, ... );
+		return setmetatable(
+			{},
+			{
+				__index = function( t, BaseName )
+					local BaseClass = _G[ BaseName ];
+					
+					if BaseClass == NULL then
+						error( "The type or namespace name '" + BaseName + "' could not be found", 3 );
+					end
+					
+					local Class	= this:Create( Name, BaseClass );
+					
+					return function( t, Values )
+						this:SetValues( Class, Values );
+					end;
 				end;
-			end
-			
-			this:SetValues( Class, ... );
-		end;
+				
+				__call = function( t, Values )
+					local Class	= this:Create( Name );
+		
+					this:SetValues( Class, Values );
+				end;
+			}
+		);
 	end;
 	
 	__call		= function( this )
 		return NULL;
 	end;
 	
-	Create		= function( this, Name )
+	Create		= function( this, Name, BaseClass )
 		local CClass	=
 		{
 			[ Name ]	= function() end;
@@ -349,27 +357,33 @@ class			=
 
 		ClassMeta.__index = ClassMeta;
 		
+		if BaseClass then
+			this:Extends( CClass, BaseClass );
+		end
+		
 		setmetatable( CClass, ClassMeta );
+		
+		_G[ Name ] = CClass;
 		
 		return CClass;
 	end;
 	
-	Extends		= function( this, Class, Bases )
-		for i, _Class in ipairs( Bases ) do
-			for key, value in pairs( _Class ) do
-				if not Protected[ key ] then
-					if type( value ) == "function" then
-						rawset( Class, key, value );
-					else
-						Class.__properties[ key ] = value;
-					end
-				end
-			end
-			
-			for key, value in pairs( _Class.__properties ) do
-				if not Protected[ key ] then
+	Extends		= function( this, Class, Base )
+		rawset( Class, "__base", Base );
+		
+		for key, value in pairs( Base ) do
+			if not Protected[ key ] then
+				if type( value ) == "function" then
+					rawset( Class, key, value );
+				else
 					Class.__properties[ key ] = value;
 				end
+			end
+		end
+		
+		for key, value in pairs( Base.__properties ) do
+			if not Protected[ key ] then
+				Class.__properties[ key ] = value;
 			end
 		end
 	end;

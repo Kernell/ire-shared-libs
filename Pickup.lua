@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Pickup ( Element )
+class. Pickup : Element
 {
 	Pickup		= function( Position, ... )
 		Position = Position or new. Vector3();

@@ -7,7 +7,7 @@
 -- http://wat.gamedev.ru/articles/quaternions
 -- http://www.gamedev.ru/code/articles/?id=4215
 
-class: Vector4
+class. Vector4
 {
 	Vector4	= function( fX, fY, fZ, fW )
 		if type( fX ) == "table" then

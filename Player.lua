@@ -7,7 +7,7 @@
 
 ASSERT( CLIENT, "This script is client-side only" );
 
-class: Player ( Ped )
+class. Player : Ped
 {
 	GetName				= function()
 		return getPlayerName( this );

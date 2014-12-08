@@ -58,7 +58,7 @@ function SetDefaultTimezone( sTimezoneID )
 	gl_pCurrentTimezone = get_time_zone_info( sTimezoneID );
 end
 
-class: DateTime
+class. DateTime
 {
 	static
 	{

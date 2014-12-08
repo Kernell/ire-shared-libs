@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Timer
+class. Timer
 {
 	Timer		= function( ... )
 		return setTimer( ... )( this );

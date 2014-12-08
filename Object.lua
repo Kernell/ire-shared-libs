@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Object ( Element )
+class. Object : Element
 {
 	Object			= function( Model, Position, Rotation )
 		Position = Position or new. Vector3();

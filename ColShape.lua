@@ -15,7 +15,7 @@ local aTypes =
 	Polygon		= true;
 };
 
-class: ColShape ( Element )
+class. ColShape : Element
 {
 	ColShape		= function( sType, ... )
 		local pElement = _G[ "createCol" + sType ]( ... );

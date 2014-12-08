@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Blowfish
+class. Blowfish
 {
 	Blowfish	= function( k )
 		if type( k ) ~= 'string' then

@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Marker ( Element )
+class. Marker : Element
 {
 	Marker		= function( Position, Type, Size, Color, VisibleTo )
 		Position 	= Position or new. Vector3();

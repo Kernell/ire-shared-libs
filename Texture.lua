@@ -7,7 +7,7 @@
 
 ASSERT( CLIENT, "This script is client-side only" );
 
-class: Texture
+class. Texture
 {
 	_Texture			= function()
 		return destroyElement( this );

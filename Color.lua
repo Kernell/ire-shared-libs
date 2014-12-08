@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Color
+class. Color
 {
 	R			= 255;
 	G			= 255;

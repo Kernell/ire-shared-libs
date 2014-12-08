@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Element
+class. Element
 {
 	Element					= function( ... )
 		if not ( { ... } )[ 1 ] then

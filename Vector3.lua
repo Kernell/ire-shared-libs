@@ -5,7 +5,7 @@
 -- License		Proprietary Software
 -- Version		1.0
 
-class: Vector3
+class. Vector3
 {
 	static
 	{
