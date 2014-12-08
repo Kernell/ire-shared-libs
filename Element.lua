@@ -228,13 +228,15 @@ class: Element
 	end;
 	
 	SetRotationAt		= function( vecPosition )
-		vecPosition = vecPosition or Vector3();
+		vecPosition = vecPosition or new. Vector3();
 		
-		local vecRotation	= new. Vector3();
+		local rotation	= new. Vector3();
 		
-		vecRotation.Z = ( 360.0 - math.deg( math.atan2( vecPosition.X - self.GetPosition().X, vecPosition.Y - self.GetPosition().Y ) ) ) % 360.0;
+		local position	= this.GetPosition();
 		
-		return self.SetRotation( vecRotation );
+		rotation.Z = ( 360.0 - math.deg( math.atan2( vecPosition.X - position.X, vecPosition.Y - position.Y ) ) ) % 360.0;
+		
+		return this.SetRotation( rotation );
 	end;
 	
 	SetVelocity				= function( pVector )
