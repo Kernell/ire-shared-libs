@@ -18,6 +18,19 @@ local Protected	=
 	__fenv			= true;
 };
 
+local fenvs = {};
+
+local _setfenv = setfenv;
+function setfenv( f, env )
+	fenvs[ f ] = env;
+	
+	return env and _setfenv( f, env );
+end
+
+function getfenv( f )
+	return fenvs[ f ];
+end
+
 class			= 
 {
 	__newindex	= function( this )
@@ -32,7 +45,7 @@ class			=
 					local BaseClass = _G[ BaseName ];
 					
 					if BaseClass == NULL then
-						error( "The type or namespace name '" + BaseName + "' could not be found", 3 );
+						error( "The type or namespace name '" + BaseName + "' could not be found", 2 );
 					end
 					
 					local Class	= this:Create( Name, BaseClass );
@@ -238,14 +251,13 @@ class			=
 		};
 		
 		CClass.__class 			= CClass;
-		CClass.__tostring__ 	= CClass.__tostring;
 		
 		function CClass:__tostring()
-			if self.ToString then
+			if rawget( self, "ToString" ) then
 				return self.ToString();
 			end
 			
-			CClass.__tostring = NULL;
+			rawset( CClass, "__tostring", NULL );
 			
 			local Result = tostring( self );
 			
@@ -253,6 +265,8 @@ class			=
 			
 			return Result;
 		end;
+		
+		CClass.__tostring__ 	= CClass.__tostring;
 		
 		function CClass:__index( KeyName )
 			local Result = rawget( self, KeyName );
@@ -265,6 +279,44 @@ class			=
 				setfenv( Result, self.__fenv );
 				
 				return Result;
+			end
+			
+			if type( Result ) == "table" and Result.__type == "event" then
+				local Event =
+				{
+					__name = KeyName[ 1 ]:lower() + KeyName:sub( 2, -1 );
+					
+					__call = function( ttt, ... )
+						triggerEvent( ttt.__name, self.this, ... );
+					end;
+				};
+				
+				Event.Add	= function( delegate, getPropagated, priority )
+					local fenv = getfenv( delegate );
+					
+					Event[ delegate ] = function( ... )
+						setfenv( delegate, fenv );
+						
+						local e =
+						{
+							Client	= client;
+							Name	= eventName;
+							Cancel	= cancelEvent;
+						};
+						
+						return delegate( source, e, ... );
+					end;
+					
+					addEventHandler( Event.__name, self.this, Event[ delegate ], getPropagated == NULL or getPropagated, priority or "normal" );
+				end;
+				
+				Event.Remove = function( delegate )
+					if Event[ delegate ] then
+						removeEventHandler( Event.__name, self.this, Event[ delegate ] );
+					end
+				end;
+				
+				return setmetatable( Event, Event );
 			end
 			
 			if type( Result ) ~= "nil" then
@@ -295,6 +347,12 @@ class			=
 				pProperty[ KeyName ].set( vValue );
 				
 				return;
+			end
+			
+			local r = rawget( self, KeyName );
+			
+			if type( r ) == "table" and r.__type == "event" then
+				return NULL;
 			end
 			
 			rawset( self, KeyName, vValue );
@@ -381,6 +439,8 @@ class			=
 			if not Protected[ key ] then
 				if type( value ) == "function" then
 					rawset( Class, key, value );
+				elseif type( value ) == "table" and value.__type == "event" then
+					rawset( Class, key, value );
 				else
 					Class.__properties[ key ] = value;
 				end
@@ -414,6 +474,8 @@ class			=
 						local sKey = value.__property;
 						
 						Class.__property[ sKey ] = value;
+					elseif value.__type == "event" then
+						rawset( Class, value.__name, value );
 					end
 				else
 					if type( value ) == "function" then
@@ -452,6 +514,21 @@ property	=
 };
 
 setmetatable( property, property );
+
+event	=
+{
+	__index		= function( this, name )
+		local e =
+		{
+			__name	= name;
+			__type	= "event";
+		};
+		
+		return e;
+	end;
+};
+
+setmetatable( event, event );
 
 function static( Values )
 	Values.__static = true;
