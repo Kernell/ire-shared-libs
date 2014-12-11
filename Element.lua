@@ -7,6 +7,106 @@
 
 class. Element
 {
+	-- Client events
+	
+	event .OnConsole;
+	
+	-- Colshape events
+	
+	event. OnColShapeHit;
+	event. OnColShapeLeave;
+	
+	-- Element events
+	
+	event. OnElementDestroy;
+	event. OnElementDataChange;
+	event. OnElementColShapeHit;
+	event. OnElementColShapeLeave;
+	event. OnElementClicked;
+	event. OnElementStartSync;
+	event. OnElementStopSync;
+	event. OnElementModelChange;
+	
+	-- Marker events
+	
+	event. OnMarkerHit;
+	event. OnMarkerLeave;
+	
+	-- Pickup events
+	
+	event. OnPickupSpawn;
+	event. OnPickupHit;
+	event. OnPickupUse;
+	
+	-- Player events
+	
+	event. OnPlayerBan;
+	event. OnPlayerChat;
+	event. OnPlayerPrivateMessage;
+	event. OnPlayerConnect;
+	event. OnPlayerChangeNick;
+	event. OnPlayerLogin;
+	event. OnPlayerLogout;
+	event. OnPlayerDamage;
+	event. OnPlayerJoin;
+	event. OnPlayerQuit;
+	event. OnPlayerSpawn;
+	event. OnPlayerWasted;
+	event. OnPlayerTarget;
+	event. OnPlayerVehicleEnter;
+	event. OnPlayerVehicleExit;
+	event. OnPlayerWeaponSwitch;
+	event. OnPlayerMarkerHit;
+	event. OnPlayerMarkerLeave;
+	event. OnPlayerPickupHit;
+	event. OnPlayerPickupUse;
+	event. OnPlayerClick;
+	event. OnPlayerContact;
+	event. OnPlayerStealthKill;
+	event. OnPlayerMute;
+	event. OnPlayerUnmute;
+	event. OnPlayerCommand;
+	event. OnPlayerModInfo;
+	event. OnPlayerVoiceStart;
+	event. OnPlayerVoiceStop;
+	event. OnPlayerScreenShot;
+	
+	-- Ped events
+	
+	event. OnPedWasted;
+	event. OnPedWeaponSwitch;
+	
+	-- Resource events
+	
+	event. OnResourceStart;
+	event. OnResourcePreStart;
+	event. OnResourceStop;
+	
+	-- Server events
+	
+	event. OnBan;
+	event. OnDebugMessage;
+	event. OnSettingChange;
+	event. OnAccountDataChange;
+	event. OnUnban;
+	event. OnChatMessage;
+	
+	-- Vehicle events
+	
+	event. OnTrailerAttach;
+	event. OnTrailerDetach;
+	event. OnVehicleDamage;
+	event. OnVehicleRespawn;
+	event. OnVehicleStartEnter;
+	event. OnVehicleStartExit;
+	event. OnVehicleEnter;
+	event. OnVehicleExit;
+	event. OnVehicleExplode;
+	
+	-- Weapon events
+	
+	event. OnWeaponFire;
+	
 	Element					= function( ... )
 		if not ( { ... } )[ 1 ] then
 			error( "Bad argument @ 'createElement' [Expected string at argument 1, got none]", 2 );
@@ -20,11 +120,11 @@ class. Element
 	end;
 	
 	_Element				= function()
-		return destroyElement( this );
+		return this.Destroy();
 	end;
 	
 	Destroy					= function()
-		delete ( this );
+		return destroyElement( this );
 	end;
 	
 	AddEvent				= function( sEvent, vFunction, pObject )
