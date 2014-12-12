@@ -304,7 +304,13 @@ class			=
 							Cancel	= cancelEvent;
 						};
 						
-						return delegate( source, e, ... );
+						local c = coroutine.create( delegate );
+						
+						local result, message = coroutine.resume( c, source, e, ... );
+						
+						if not result then
+							error( tostring( message ), 3 );
+						end
 					end;
 					
 					addEventHandler( Event.__name, self.this, Event[ delegate ], getPropagated == NULL or getPropagated, priority or "normal" );
