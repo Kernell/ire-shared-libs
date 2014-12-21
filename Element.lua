@@ -283,8 +283,8 @@ class. Element
 		return isElementWithinMarker( this );
 	end;
 	
-	SetAlpha				= function()
-		return setElementAlpha( this );
+	SetAlpha				= function( alpha )
+		return setElementAlpha( this, alpha );
 	end;
 	
 	SetCollisionsEnabled	= function( Enabled )
