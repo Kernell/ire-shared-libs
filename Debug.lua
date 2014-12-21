@@ -29,7 +29,7 @@ function Warning( iLevel, iNumber, ... )
 	local sPath	= (string)(pInfo.short_src);
 	local sLine	= (string)(pInfo.currentline);
 	
-	local iStart = sPath:find( "%[worp%]" );
+	local iStart = sPath:find( "%[ire%]" );
 	
 	sPath = sPath:sub( tonumber( iStart ) or 1, sPath:len() ):gsub( "%/", "%\\" );
 	
