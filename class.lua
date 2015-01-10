@@ -380,6 +380,7 @@ class			=
 				{
 					__type	= "object";
 					__fenv	= {};
+					base	= BaseClass;
 				};
 				
 				local fenv_meta =
