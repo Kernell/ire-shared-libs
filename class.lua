@@ -253,7 +253,7 @@ class			=
 		CClass.__class 			= CClass;
 		
 		function CClass:__tostring()
-			if rawget( self, "ToString" ) then
+			if self.ToString then
 				return self.ToString();
 			end
 			
