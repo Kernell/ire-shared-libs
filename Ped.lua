@@ -180,7 +180,7 @@ class. Ped : Element
 	
 	-- Client
 	
-	GetBonePosition			= function( this, iBone )
+	GetBonePosition			= function( iBone )
 		return new. Vector3( getPedBonePosition( this, iBone ) );
 	end;
 	
