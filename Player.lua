@@ -1,7 +1,7 @@
 -- Innovation Roleplay Engine
 --
 -- Author		Kernell
--- Copyright	© 2011 - 2014
+-- Copyright	© 2011 - 2015
 -- License		Proprietary Software
 -- Version		1.0
 
@@ -29,7 +29,7 @@ class. Player : Ped
 		return getPlayerNametagColor( this );
 	end;
 	
-	SetNametagShowing	= function()
-		return setPlayerNametagShowing( this );
+	SetNametagShowing	= function( showing )
+		return setPlayerNametagShowing( this, showing );
 	end;
 };
