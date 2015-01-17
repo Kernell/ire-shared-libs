@@ -114,7 +114,7 @@ class. DateTime
 		this.m_pTime.z			= this.TimezoneInfo.offset;
 	end;
 	
-	Format = function( this, format )
+	Format = function( format )
 		local t 		= this.m_pTime;
 		local offset	= {};
 		local buffer 	= "";
