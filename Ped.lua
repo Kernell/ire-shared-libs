@@ -44,7 +44,7 @@ class. Ped : Element
 		end;
 	};
 	
-	Ped		= function( this, iModel, vecPosition, ... )
+	Ped		= function( iModel, vecPosition, ... )
 		vecPosition = vecPosition or new. Vector3();
 		
 		local pPed = createPed( iModel, vecPosition.X, vecPosition.Y, vecPosition.Z, ... );
