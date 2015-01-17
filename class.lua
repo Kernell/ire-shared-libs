@@ -319,6 +319,8 @@ class			=
 				Event.Remove = function( delegate )
 					if Event[ delegate ] then
 						removeEventHandler( Event.__name, self.this, Event[ delegate ] );
+						
+						Event[ delegate ] = NULL;
 					end
 				end;
 				
