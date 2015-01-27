@@ -70,6 +70,7 @@ class. Element
 	event. OnPlayerVoiceStart;
 	event. OnPlayerVoiceStop;
 	event. OnPlayerScreenShot;
+	event. OnPlayerRadialMenu;
 	
 	-- Ped events
 	
