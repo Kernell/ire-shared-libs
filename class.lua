@@ -507,6 +507,49 @@ new		=
 		
 		return Class and Class:__new();
 	end;
+	
+	__call		= function( this, tabl )
+		local meta =
+		{
+			Insert		= function( ... )
+				return table.insert( tabl, ... );
+			end;
+			
+			Remove		= function( ... )
+				return table.remove( tabl, ... );
+			end;
+			
+			Length		= function()
+				return table.getn( tabl );
+			end;
+			
+			ForeachI	= function( ... )
+				return table.foreachi( tabl, ... );
+			end;
+			
+			Foreach		= function( ... )
+				return table.foreach( tabl, ... );
+			end;
+			
+			Max			= function()
+				return table.maxn( tabl );
+			end;
+			
+			Join		= function( ... )
+				return table.concat( tabl, ... );
+			end;
+			
+			Sort		= function( ... )
+				return table.sort( tabl, ... );
+			end;
+		};
+		
+		meta.Concat		= meta.Join;
+		
+		meta.__index 	= meta;
+		
+		return setmetatable( tabl, meta );
+	end;
 };
 
 setmetatable( new, new );
