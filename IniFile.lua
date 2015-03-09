@@ -130,63 +130,76 @@ class. IniFile
 	end;
 	
 	ParseValue		= function( token )
-		local value = "";
+		local values =
+		{
+			[ 1 ] = "";
+		};
+		
+		local nValue = 1;
+		
+		local inQuote = false;
 		
 		while true do
 			this.GetToken( token );
 			
-			if this.IsComment( token ) then
+			if token.Char == "\r" then
+				if inQuote then
+					this.Error( token, "Syntax error. Unexpected end of line" );
+				end
+				
 				break;
-			elseif this.IsWhiteSpace( token ) then
-				-- continue;
 			else
-				value = value .. token.Char;
+				if inQuote then
+					if inQuote == token.Char then
+						inQuote = false;
+					else
+						values[ nValue ] = values[ nValue ] .. token.Char;
+					end
+				else
+					if not inQuote and ( token.Char == "'" or token.Char == "\"" ) then
+						inQuote = token.Char;
+					elseif token.Char == "," then
+						nValue = nValue + 1;
+						
+						values[ nValue ] = "";
+					elseif this.IsComment( token ) then
+						break;
+					elseif this.IsWhiteSpace( token ) then
+						-- continue;
+					else
+						values[ nValue ] = values[ nValue ] .. token.Char;
+					end
+				end
 			end
 		end
 		
-		local Values = {};
-		
-		value = value:trim();
-		
-		if value[ 1 ] ~= "'" and value[ 1 ] ~= '"' and value[ -1 ] ~= "'" and value[ -1 ] ~= '"' then	
-			for i, v in ipairs( value:split( "," ) ) do
-				v = v:trim();
-				
-				if v == "true" or v == "false" then
-					Values[ i ] = v == "true";
-				elseif tonumber( v ) then
-					Values[ i ] = tonumber( v );
-				elseif v[ -1 ] == "f" and tonumber( v:sub( 1, -2 ) ) then
-					Values[ i ] = tonumber( v:sub( 1, -2 ) );
-				elseif ( v[ 1 ] == "'" or v[ 1 ] == '"' ) and ( v[ -1 ] ~= "'" or v[ -1 ] ~= '"' ) then
-					if v[ 1 ] ~= v[ -1 ] then
-						this.Error( token, "Syntax error" );
-					end
-					
-					Values[ i ] = v:sub( 2, -2 );
-				else
-					Values[ i ] = v;
-				end
-			end
-		else
-			if ( value[ 1 ] == "'" and value[ -1 ] == "'" ) or ( value[ 1 ] == '"' and value[ -1 ] == '"' ) then
-				if value[ 1 ] ~= value[ -1 ] then
+		for i, v in ipairs( values ) do
+			v = v:trim();
+			
+			if v == "true" or v == "false" then
+				values[ i ] = v == "true";
+			elseif tonumber( v ) then
+				values[ i ] = tonumber( v );
+			elseif v[ -1 ] == "f" and tonumber( v:sub( 1, -2 ) ) then
+				values[ i ] = tonumber( v:sub( 1, -2 ) );
+			elseif v[ 1 ] == "'" or v[ 1 ] == "\"" then
+				if v[ 1 ] ~= v[ -1 ] then
 					this.Error( token, "Syntax error" );
 				end
-					
-				value = value:sub( 2, -2 );
+				
+				values[ i ] = v:sub( 2, -2 );
+			else
+				values[ i ] = v;
 			end
-			
-			Values[ 1 ] = value;
 		end
 		
 		if this.CurrentSection then
-			local len = table.getn( Values );
+			local len = table.getn( values );
 			
 			if len == 1 then
-				this.CurrentSection[ token.Key ] = Values[ 1 ];
+				this.CurrentSection[ token.Key ] = values[ 1 ];
 			elseif len > 1 then
-				this.CurrentSection[ token.Key ] = Values;
+				this.CurrentSection[ token.Key ] = values;
 			end
 		end
 	end;
