@@ -275,12 +275,6 @@ class			=
 				Result = CClass[ KeyName ];
 			end
 			
-			if type( Result ) == "function" then
-				setfenv( Result, self.__fenv );
-				
-				return Result;
-			end
-			
 			if type( Result ) == "table" and Result.__type == "event" then
 				local Event =
 				{
@@ -404,6 +398,22 @@ class			=
 				
 				for key, value in pairs( Class.__properties ) do
 					Object[ key ] = value;
+				end
+				
+				for key, func in pairs( Class ) do
+					if type( func ) == "function" then
+						Object[ key ] = function( ... )
+							local oldfenv = getfenv( func );
+							
+							setfenv( func, Object.__fenv );
+							
+							local result = { func( ... ) };
+							
+							setfenv( func, oldfenv );
+							
+							return unpack( result );
+						end
+					end
 				end
 				
 				return Object;
