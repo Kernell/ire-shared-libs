@@ -144,22 +144,30 @@ class. IniFile
 		
 		if value[ 1 ] ~= "'" and value[ 1 ] ~= '"' and value[ -1 ] ~= "'" and value[ -1 ] ~= '"' then	
 			for i, v in ipairs( value:split( "," ) ) do
+				v = v:trim();
+				
 				if v == "true" or v == "false" then
 					Values[ i ] = v == "true";
 				elseif tonumber( v ) then
 					Values[ i ] = tonumber( v );
+				elseif v[ -1 ] == "f" and tonumber( v:sub( 1, -2 ) ) then
+					Values[ i ] = tonumber( v:sub( 1, -2 ) );
 				elseif ( v[ 1 ] == "'" or v[ 1 ] == '"' ) and ( v[ -1 ] ~= "'" or v[ -1 ] ~= '"' ) then
 					if v[ 1 ] ~= v[ -1 ] then
 						this.Error( token, "Syntax error" );
 					end
 					
-					Values[ i ] = v:sub( 2, v:len() - 1 );
+					Values[ i ] = v:sub( 2, -2 );
 				else
 					Values[ i ] = v;
 				end
 			end
 		else
 			if ( value[ 1 ] == "'" and value[ -1 ] == "'" ) or ( value[ 1 ] == '"' and value[ -1 ] == '"' ) then
+				if value[ 1 ] ~= value[ -1 ] then
+					this.Error( token, "Syntax error" );
+				end
+					
 				value = value:sub( 2, -2 );
 			end
 			
