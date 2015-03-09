@@ -17,6 +17,16 @@ class. File
 			return file;
 		end;
 		
+		Open	= function( path, mode )
+			local file = new. File( path, mode );
+			
+			if file.IsValid() then
+				return file;
+			end
+			
+			return NULL;
+		end;
+		
 		Exists	= function( path )
 			return fileExists( path );
 		end;
@@ -75,12 +85,8 @@ class. File
 		return fileIsEOF( this.__file );
 	end;
 	
-	Read		= function()
-		return fileRead( this.__file, this.GetSize() );
-	end;
-	
-	ReadBytes	= function( bytes )
-		return fileRead( this.__file, bytes );
+	Read		= function( size )
+		return fileRead( this.__file, size or this.GetSize() );
 	end;
 	
 	ReadLine	= function()
