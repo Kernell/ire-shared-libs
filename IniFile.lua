@@ -24,6 +24,12 @@ class. IniFile
 		
 		local content	= this.File.Read();
 		
+		if content[ 1 ]:byte() == 0xEF and content[ 2 ]:byte() == 0xBB and content[ 3 ]:byte() == 0xBF then
+			content = content:sub( 4, -1 );
+			
+			Debug( "Loading '" + fileName + "' in UTF-8 with BOM", 0 );
+		end
+		
 		this.Code	=
 		{
 			Path	= table.concat( path, "\\" );
