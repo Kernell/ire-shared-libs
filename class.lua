@@ -205,20 +205,8 @@ class			=
 				if self.Equality then
 					return self.Equality( op );
 				end
-				
-				local Types =
-				{
-					{ typeof( self ), self },
-					{ typeof( op ), op }
-				};
-				
-				for i, Type in ipairs( Types ) do
-					if Type[ 1 ] == "object" then
-						Types[ i ][ 1 ] = classname( Type[ 2 ] );
-					end
-				end
-				
-				error( "Operator '==' cannot be applied to operands of type '" + Types[ 1 ][ 1 ] + "' and '" + Types[ 2 ][ 1 ] + "'", 2 );
+
+				return rawequal( self, op );
 			end;
 			
 			__concat	= function( self, op )
