@@ -438,13 +438,13 @@ class			=
 			error( "A namespace does not directly contain members such as fields or methods", 2 );
 		end;
 		
+		setmetatable( CClass, ClassMeta );
+		
 		ClassMeta.__index = ClassMeta;
 		
 		if BaseClass then
 			this:Extends( CClass, BaseClass );
 		end
-		
-		setmetatable( CClass, ClassMeta );
 		
 		_G[ Name ] = CClass;
 		
